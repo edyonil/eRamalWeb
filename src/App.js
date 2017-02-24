@@ -16,7 +16,8 @@ export default class App extends Component {
   constructor() {
     super();
     this.state = {
-      data: []
+      data: [],
+      form: {}
     }
   }
 
@@ -56,12 +57,14 @@ export default class App extends Component {
               <div className="columns content">
                 <div className="column is-3 sidebar">
                   <h3 className="title is-primary is-4" style={styles.title}>Adicionar Contato</h3>
-                  <FormContatoComponent onSalvar={this.onSubmit}></FormContatoComponent>
+                  <FormContatoComponent {...this.state} onSalvar={this.onSubmit}></FormContatoComponent>
                 </div>
                 <div className="column main" style={styles.conteudoFixo}>
                   <TabelaContatoComponent 
                     itens={this.state.data}
-                    onRemove={this.onRemove}>
+                    onRemove={this.onRemove}
+                    onEdit={this.onEdit}
+                    >
                   </TabelaContatoComponent>
                 </div>
               </div>
@@ -81,8 +84,14 @@ export default class App extends Component {
     this.firebaseRef.child(item['.key']).remove();
   }
 
+  onEdit = (item) => {
+    this.setState({
+      form: item
+    });
+  }
+
   onUpdate = (item) => {
-    this.firebaseRef.child(item['.key']).update(item);
+    
   }
 }
 

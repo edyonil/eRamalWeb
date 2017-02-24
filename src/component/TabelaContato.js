@@ -36,7 +36,7 @@ export default class TabelaContatoComponent extends Component {
                                         <td>{item.ramal}</td>
                                         <td>{item.setor}</td>
                                         <td>
-                                            <a className="button is-primary">
+                                            <a className="button is-primary" onClick={() => {_this.onEdit(item)}}>
                                                 <span className="icon is-small">
                                                     <i className="fa fa-pencil-square-o"></i>
                                                 </span>
@@ -59,5 +59,9 @@ export default class TabelaContatoComponent extends Component {
 
     onRemove = (item) => {
         this.props.onRemove(item);
+    }
+
+    onEdit = (item) => {
+        this.props.onEdit(item);
     }
 }
