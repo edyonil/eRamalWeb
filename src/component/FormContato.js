@@ -5,29 +5,26 @@ import './FormContato.css';
 
 export default class FormContatoComponent extends Component {
 
-    constructor(props) {
-        super(props);
 
-        this.state = {
-            form: {}
-        }
-        
+    componentWillReceiveProps(nextProps) {
+        this.refs.nome.value = nextProps.form.nome;
+        this.refs.ramal.value = nextProps.form.ramal;
+        this.refs.setor.value = nextProps.form.setor;
     }
-
     render() {
         return (
             <form className="form" onSubmit={this.handleSubmit}>
                 <label htmlFor="nome" className="label">Nome</label>
                 <div className="control">
-                    <input type="text" value={this.state.form.nome} className="input is-medium" id="nome" ref="nome" placeholder="Digite o nome " />
+                    <input type="text" className="input is-medium" id="nome" ref="nome" placeholder="Digite o nome " />
                 </div>
                 <label htmlFor="ramal" className="label">Ramal/Telefone</label>
                 <div className="control">
-                    <input id="ramal" value={this.state.form.ramal} type="text" className="input is-medium" ref="ramal" placeholder="Digite o ramal " />
+                    <input id="ramal" type="text" className="input is-medium" ref="ramal" placeholder="Digite o ramal " />
                 </div>
                 <label htmlFor="setor" className="label">Setor</label>
                 <div className="control">
-                    <input id="setor" value={this.state.form.setor} type="text" className="input is-medium" ref="setor" placeholder="Digite o setor " />
+                    <input id="setor" type="text" className="input is-medium" ref="setor" placeholder="Digite o setor " />
                 </div>
                 <div className="block">
                     <button className="button is-primary is-medium is-inverted">
@@ -43,19 +40,30 @@ export default class FormContatoComponent extends Component {
 
     handleSubmit = (event) => {
         event.preventDefault();
-        var nome = this.refs.nome.value.trim();
-        var ramal = this.refs.ramal.value.trim();
-        var setor = this.refs.setor.value.trim();
-        this.props.onSalvar(
-            {
-                nome: nome,
-                ramal: ramal,
-                setor: setor
-            }
-        );
+        var data = {
+            nome: this.refs.nome.value.trim(),
+            ramal: this.refs.ramal.value.trim(),
+            setor: this.refs.setor.value.trim()
+        };
+
+        if (this.props.form.id == null) {
+            this.onSave(data);
+        } else {
+            data.id = this.props.form.id;
+            this.onEdit(data);
+        }
         this.refs.nome.value = '';
         this.refs.ramal.value = '';
         this.refs.setor.value = '';
+        this.props.form.id = null;
+    }
+
+    onEdit = (item) => {
+        this.props.onUpdate(item);
+    }
+
+    onSave = (item) => {
+        this.props.onSave(item);
     }
 
 }

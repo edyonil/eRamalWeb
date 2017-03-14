@@ -22,6 +22,7 @@ export default class TabelaContatoComponent extends Component {
                     <table className="table">
                         <thead>
                             <tr>
+                                <th>Id</th>
                                 <th>Nome</th>
                                 <th>Ramal/Telefone</th>
                                 <th>Setor</th>
@@ -32,7 +33,8 @@ export default class TabelaContatoComponent extends Component {
                             {_this.props.itens.map(function (item, index) {
                                 return (
                                     <tr key={index}>
-                                        <th>{item.nome}</th>
+                                        <td>{item['.key']}</td>
+                                        <td>{item.nome}</td>
                                         <td>{item.ramal}</td>
                                         <td>{item.setor}</td>
                                         <td>
@@ -40,8 +42,7 @@ export default class TabelaContatoComponent extends Component {
                                                 <span className="icon is-small">
                                                     <i className="fa fa-pencil-square-o"></i>
                                                 </span>
-                                            </a>&#688;
-                                            <a onClick={() => _this.onRemove(item)} className="button is-danger">
+                                            </a> <a onClick={() => _this.onRemove(item)} className="button is-danger">
                                                 <span className="icon is-small">
                                                     <i className="fa fa-trash"></i>
                                                 </span>
@@ -62,6 +63,11 @@ export default class TabelaContatoComponent extends Component {
     }
 
     onEdit = (item) => {
-        this.props.onEdit(item);
+        this.props.onEdit({
+            id: item['.key'],
+            nome: item.nome,
+            ramal: item.ramal,
+            setor: item.setor
+        });
     }
 }
