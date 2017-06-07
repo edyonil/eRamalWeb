@@ -1,12 +1,24 @@
 import React, { Component } from 'react';
+import ButtonLogoutComponent from './button-logout/ButtonLogout';
+
+const styles = {
+    image: {
+        width: '100px',
+        maxHeight: '200px'
+    },
+    nav: {
+        backgroundColor:'hsl(0, 0%, 96%)',
+        boxShadow: '2px 0px 2px hsl(0, 0%, 48%)'
+    }
+}
 
 export default class NavbarComponent extends Component {
-    render() {
+    render = () => {
         return (
-            <nav className="nav">
+            <nav className="nav" style={styles.nav}>
                 <div className="nav-left">
                     <a className="nav-item">
-                        <img src="http://bulma.io/images/bulma-logo.png" alt="Bulma logo" />
+                        <img style={styles.image} src="images/logo_thumbnail.svg" alt="Bulma logo" />
                     </a>
                 </div>
 
@@ -17,32 +29,17 @@ export default class NavbarComponent extends Component {
                 </span>
 
                 <div className="nav-right nav-menu">
-                    <a className="nav-item">
-                        Home
-                  </a>
-                    <a className="nav-item">
-                        Documentation
-                  </a>
-                    <a className="nav-item">
-                        Blog
-                  </a>
-
                     <span className="nav-item">
-                        <a className="button" >
-                            <span className="icon">
-                                <i className="fa fa-twitter"></i>
-                            </span>
-                            <span>Tweet</span>
-                        </a>
-                        <a className="button is-primary">
-                            <span className="icon">
-                                <i className="fa fa-download"></i>
-                            </span>
-                            <span>Download</span>
-                        </a>
+                        <ButtonLogoutComponent onLogout={this.onLogout}></ButtonLogoutComponent>
                     </span>
                 </div>
             </nav>
         );
+    }
+
+    onLogout = (item) => {
+        if (item) {
+            this.props.history.push('/login');
+        }
     }
 }

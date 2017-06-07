@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 
-
 import './FormContato.css';
 
 export default class FormContatoComponent extends Component {

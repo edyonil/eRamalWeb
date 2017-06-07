@@ -18,16 +18,12 @@ const styles = {
     marginLeft: 0,
     marginRight: 0
   },
-  columnsSemMargem: {
-    paddingTop: 0
+  contentCental: {
+    paddingTop: '20px'
   },
   title: {
     color: '#FFF'
-  },
-  imgStyle: {
-    width: '75%'
   }
-
 }
 
 export default class App extends Component {
@@ -64,40 +60,30 @@ export default class App extends Component {
     }.bind(this));
   }
 
-  render() {
+  render = () => {
     return (
       <div className="container padrao is-fluid content" style={styles.container}>
-        <div className="columns content">
-          <div className="column is-2 hero is-dark" style={styles.conteudoFixo}>
-            <div className="logo">
-              <img role="presentation" style={styles.imgStyle} src="/images/atom.png" />
-              <h4 className="title is-5">Seu aplicativo de ramais</h4>
+
+        <NavbarComponent history={this.props.history}></NavbarComponent>
+
+        <div className="container is-fluid content" style={styles.container}>
+          <div className="columns content">
+            <div className="column is-3 sidebar">
+              <h3 className="title is-primary is-4" style={styles.title}>Adicionar Contato</h3>
+              <FormContatoComponent
+                form={this.state.form}
+                onSave={this.onSubmit}
+                onUpdate={this.onUpdate}></FormContatoComponent>
             </div>
-          </div>
-          <div className="column content" style={styles.columnsSemMargem}>
 
-            <div className="container is-fluid content" style={styles.container}>
-
-              <NavbarComponent></NavbarComponent>
-
-              <div className="columns content">
-                <div className="column is-3 sidebar">
-                  <h3 className="title is-primary is-4" style={styles.title}>Adicionar Contato</h3>
-                  <FormContatoComponent
-                    form={this.state.form}
-                    onSave={this.onSubmit}
-                    onUpdate={this.onUpdate}></FormContatoComponent>
-                </div>
-                <div className="column main" style={styles.conteudoFixo}>
-                  <TabelaContatoComponent
-                    itens={this.state.data}
-                    onRemove={this.onRemove}
-                    onEdit={this.onEdit}
-                  >
-                  </TabelaContatoComponent>
-                </div>
-              </div>
+            <div className="column main" style={{...styles.conteudoFixo, ...styles.contentCental}}>
+              <TabelaContatoComponent
+                itens={this.state.data}
+                onRemove={this.onRemove}
+                onEdit={this.onEdit}>
+              </TabelaContatoComponent>
             </div>
+
           </div>
         </div>
       </div>

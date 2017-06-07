@@ -1,0 +1,20 @@
+.input-filter {
+    background-color: #1d62d1;
+    border: 1px solid #1d62d1;
+}
+input.input-filter:hover {
+    border: 1px solid #0f52bf;
+}
+.input-filter:focus {
+    border: 1px solid #0f52bf;
+    box-shadow: 0px 0px 4px #0f52bf;
+}
+.control.has-icons-left .input:focus ~ .icon, .control.has-icons-right .input:focus ~ .icon {
+  color: #fff;
+}
+.input.input-filter {
+    color: #FFF;
+}
+.input:hover {
+    border-color:#039980;
+}

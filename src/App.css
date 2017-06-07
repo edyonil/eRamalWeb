@@ -20,8 +20,31 @@
 .App-intro {
   font-size: large;
 }*/
+.er-box {
+  position: relative;
+  background-color: transparent;
+  box-shadow: none;
+  border: 0;
+}
+.loading  {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      top:0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255,255,255, .55);
+      min-height: 100px;
+      line-height: 1;
+      z-index: 9999;
+      border-radius: 5px;
+  }
 
 @keyframes App-logo-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+
