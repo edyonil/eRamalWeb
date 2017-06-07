@@ -79,9 +79,8 @@ export default class Home extends Component
     }
 
     onLogin = (item) => {
+        
         //@todo remover apos os testes
-        localStorage.setItem('token', '98098908098khfksdjhklsjhf98098');
-        this.setState({redirectToReferrer: true});
         try {
             this.validFormLogin(item);
         } catch (error) {

@@ -51,7 +51,7 @@ export default class App extends Component {
 
   componentWillMount = () => {
 
-    //this.onInit();
+    this.onInit();
     //var ref = firebase.database().ref("items");
     this.setState({showLoading:true});
     this.firebaseRef = firebase.database().ref('ramais');
