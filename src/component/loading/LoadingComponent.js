@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 
 export default class LoadingComponent extends Component{
     render() {
-        const show = (this.props.show === true) ? {display:'block'} : {display: 'none'};
+        const show = (this.props.show === true) ? {display:'flex'} : {display: 'none'};
         return (
             <div className="loading" style={show}>
                 <span className="icon">
