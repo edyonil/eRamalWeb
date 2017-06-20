@@ -79,6 +79,8 @@ export default class Home extends Component
     }
 
     onLogin = (item) => {
+        
+        //@todo remover apos os testes
         try {
             this.validFormLogin(item);
         } catch (error) {

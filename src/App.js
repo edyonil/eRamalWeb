@@ -5,8 +5,9 @@ import NavbarComponent from './component/Navbar';
 import TabelaContatoComponent from './component/TabelaContato';
 import FormContatoComponent from './component/FormContato';
 
-import firebase from 'firebase';
-import ReactFireMixin from 'reactfire';
+import LoadingComponent from './component/loading/LoadingComponent';
+import AlertComponent from './component/alert/AlertComponent';
+import Util from './util/util';
 
 const styles = {
   container: {
@@ -28,39 +29,29 @@ const styles = {
 
 export default class App extends Component {
 
-  mixins = [ReactFireMixin];
-
-  constructor() {
-    super();
-    this.state = {
-      data: [],
-      form: {
-        nome: '',
-        ramal: '',
-        setor: ''
-      }
-    }
+  state = {
+    data: [],
+    form: {
+      nome: '',
+      ramalOuTelefone: '',
+      setor: ''
+    },
+    alert: {
+      text: null,
+      className: 'is-success',
+      show: false
+    },
+    showLoading: false,
+    edit: false
   }
 
   componentWillMount = () => {
-    //var ref = firebase.database().ref("items");
-    this.firebaseRef = firebase.database().ref('ramais');
-    this.firebaseRef.limitToLast(25)
-    .on('value', function (dataSnapshot) {
-      var items = [];
-      dataSnapshot.forEach(function (childSnapshot) {
-        var item = childSnapshot.val();
-        item['.key'] = childSnapshot.key;
-        items.push(item);
-      });
-
-      this.setState({
-        data: items
-      });
-    }.bind(this));
+    this.onInit();
   }
 
   render = () => {
+    const alert = this.state.alert;
+    const show = this.state.showLoading;
     return (
       <div className="container padrao is-fluid content" style={styles.container}>
 
@@ -70,17 +61,23 @@ export default class App extends Component {
           <div className="columns content">
             <div className="column is-3 sidebar">
               <h3 className="title is-primary is-4" style={styles.title}>Adicionar Contato</h3>
+              <AlertComponent text={alert.text} show={alert.show} classPropsName={alert.className} />
               <FormContatoComponent
+                edit={this.state.edit}
+                onCancel={this.onCancel}
                 form={this.state.form}
                 onSave={this.onSubmit}
-                onUpdate={this.onUpdate}></FormContatoComponent>
+                onUpdate={this.onUpdate}>
+              </FormContatoComponent>
             </div>
 
-            <div className="column main" style={{...styles.conteudoFixo, ...styles.contentCental}}>
+            <div className="er-box box column main" style={{...styles.conteudoFixo, ...styles.contentCental}}>
+              <LoadingComponent show={show} />
               <TabelaContatoComponent
                 itens={this.state.data}
                 onRemove={this.onRemove}
-                onEdit={this.onEdit}>
+                onEdit={this.onEdit}
+                onSearch={this.onInit}>
               </TabelaContatoComponent>
             </div>
 
@@ -90,29 +87,195 @@ export default class App extends Component {
     );
   }
 
-  onSubmit = (data) => {
-    this.firebaseRef.push(data);
+  onInit = (filter) => {
+    this.setState({showLoading: true});
+    let uri = this.onMountUri();
+    if (filter) {
+      if (filter === '') {
+        uri = this.onMountUri();
+      } else {
+        uri += '?filtro=' + filter
+      }
+    };
+    fetch(this.request(uri, 'GET'))
+    .then((response) => {
+        if (!response.ok) {
+            return response.text().then((data) => {
+                throw new Error(data);
+            })
+        }
+        return response.json();
+    })
+    .then((response) => {
+        this.setState({showLoading: false});
+        this.setState({redirectToReferrer: true});
+        this.setState({
+          data: response.itens
+        });
+        setTimeout(() => {
+          this.onHideMessage();
+        }, 4000);
+    })
+    .catch(this.handlerError);   
   }
 
-  onRemove = (item) => {
-    this.firebaseRef.child(item['.key']).remove();
+  /**
+   * Salvar
+   * @memberof App
+   */
+  onSubmit = (data) => {
+
+    let item = this.state.data;    
+    this.setState({showLoading: true});
+    let uri = this.onMountUri();
+    //let uri = Util.getUri()+'api/ping';
+    //this.data.push(data);
+    fetch(this.request(uri, 'POST', data))
+    .then((response) => {
+        if (!response.ok) {
+            return response.text().then((data) => {
+                throw new Error(data);
+            })
+        }
+        return response.json();
+    })
+    .then((response) => {
+        item.push(response);
+        this.setState({
+          data: item,
+          showLoading: false,
+          redirectToReferrer: true
+        })
+        this.onShowMessage('Registro cadastro com sucesso', 'is-success');
+        setTimeout(() => {
+          this.onHideMessage();
+        }, 4000);
+    })
+    .catch(this.handlerError);
+  }
+
+  /**
+   * Remover
+   * @memberof App
+   */
+  onRemove = (data) => {
+    let uri = this.onMountUri() + '/' + data.id;
+    this.setState({showLoading: true});
+    fetch(this.request(uri, 'DELETE'))
+    .then((response) => {
+        if (!response.ok) {
+            return response.text().then((data) => {
+                throw new Error(data);
+            })
+        }
+        return response.json();
+    })
+    .then((response) => {
+        this.setState({redirectToReferrer: true, showLoading: false});
+        this.onShowMessage('Registro removido com sucesso', 'is-success');
+        setTimeout(() => {
+          this.onHideMessage();
+        }, 4000);
+    })
+    .catch(this.handlerError);
   }
 
   onEdit = (item) => {
     this.setState({
-      form: item
+      form: item,
+      edit: true
     })
   }
 
-  onUpdate = (item) => {
-    this.firebaseRef.child(item.id).update(item);
+  onUpdate = (data) => {
+    let itens = this.state.data;
+    this.setState({showLoading: true});
+    let uri = this.onMountUri() + "/" + data.id;
+    //let uri = Util.getUri()+'api/ping';
+    fetch(this.request(uri, 'PUT', data))
+    .then((response) => {
+        if (!response.ok) {
+            return response.text().then((data) => {
+                throw new Error(data);
+            })
+        }
+        return response.json();
+    })
+    .then((response) => {
+        itens.map(function(item) {
+          if (item.id === data.id) {
+            item.nome = data.nome;
+            item.setor = data.setor;
+            item.ramalOuTelefone = data.ramalOuTelefone;
+          }
+          return item;
+        });
+        this.setState({
+          data: itens,
+          showLoading: false,
+          redirectToReferrer: true,
+          edit: false
+        });
+        this.onShowMessage('Registro cadastro com sucesso', 'is-success');
+        setTimeout(() => {
+          this.onHideMessage();
+        }, 4000);
+    })
+    .catch(this.handlerError);
+  }
+
+  onShowMessage = (message, className) => {
     this.setState({
-      form: {
-        nome: '',
-        ramal: '',
-        setor: '',
-        id: null
+      alert: {
+        show: true,
+        text: message,
+        className: className
       }
     });
   }
+
+  onHideMessage = () => {
+    this.setState({
+      alert: {
+        show:false,
+        text:null
+      }
+    });
+  }
+
+  onMountUri = () => {
+    return Util.getUri()+'contatos';
+  }
+
+  handlerError = (error) => {
+    const data = error.message;
+    const er = JSON.parse(data);
+    this.setState({showLoading: false});
+    this.onShowMessage(er.message, 'is-warning');
+    setTimeout(() => {
+        this.onHideMessage();
+    }, 4000);
+  }
+
+  onCancel = (edit) => {
+    this.setState({
+      edit: edit
+    })
+  }
+
+  request = (uri, method, data) => {
+    
+    const options = {
+        method: method,
+        mode: 'cors',
+        headers: Util.mountHeader()
+    };
+    
+    if (data) {
+      options.body = JSON.stringify(data);
+    };
+
+    return new Request(uri, options);
+  }
+
 }
