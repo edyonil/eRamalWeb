@@ -1,6 +1,6 @@
 export default class Util
 {
-    static uri = 'http://localhost:8080/';
+    static uri = 'http://agencia7bahia.com:8080/';
 
     static mountHeader()
     {
