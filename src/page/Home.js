@@ -32,7 +32,12 @@ export default class Home extends Component
 }
 
 export const isAuthenticated = () => {
-  return !!localStorage.getItem('token');
+  let token = localStorage.getItem('token');
+  if (token === 'undefined') {
+    return false;
+  }
+
+  return true;
 }
 
 const PrivateRoute = ({component: Component, ...rest}) => (

@@ -9,9 +9,6 @@ import LoadingComponent from './component/loading/LoadingComponent';
 import AlertComponent from './component/alert/AlertComponent';
 import Util from './util/util';
 
-import firebase from 'firebase';
-import ReactFireMixin from 'reactfire';
-
 const styles = {
   container: {
     marginLeft: 0,
@@ -32,13 +29,11 @@ const styles = {
 
 export default class App extends Component {
 
-  mixins = [ReactFireMixin];
-
   state = {
     data: [],
     form: {
       nome: '',
-      ramal: '',
+      ramalOuTelefone: '',
       setor: ''
     },
     alert: {
@@ -46,29 +41,12 @@ export default class App extends Component {
       className: 'is-success',
       show: false
     },
-    showLoading: false
+    showLoading: false,
+    edit: false
   }
 
   componentWillMount = () => {
-
     this.onInit();
-    //var ref = firebase.database().ref("items");
-    this.setState({showLoading:true});
-    this.firebaseRef = firebase.database().ref('ramais');
-    this.firebaseRef.limitToLast(25)
-    .on('value', function (dataSnapshot) {
-      var items = [];
-      dataSnapshot.forEach(function (childSnapshot) {
-        var item = childSnapshot.val();
-        item['.key'] = childSnapshot.key;
-        items.push(item);
-      });
-
-      this.setState({
-        data: items
-      });
-      this.setState({showLoading:false});
-    }.bind(this));
   }
 
   render = () => {
@@ -83,11 +61,14 @@ export default class App extends Component {
           <div className="columns content">
             <div className="column is-3 sidebar">
               <h3 className="title is-primary is-4" style={styles.title}>Adicionar Contato</h3>
-              <AlertComponent show={alert.show} classPropsName={alert.className} />
+              <AlertComponent text={alert.text} show={alert.show} classPropsName={alert.className} />
               <FormContatoComponent
+                edit={this.state.edit}
+                onCancel={this.onCancel}
                 form={this.state.form}
                 onSave={this.onSubmit}
-                onUpdate={this.onUpdate}></FormContatoComponent>
+                onUpdate={this.onUpdate}>
+              </FormContatoComponent>
             </div>
 
             <div className="er-box box column main" style={{...styles.conteudoFixo, ...styles.contentCental}}>
@@ -107,13 +88,13 @@ export default class App extends Component {
   }
 
   onInit = (filter) => {
-    this.setState({showLoading: false});
+    this.setState({showLoading: true});
     let uri = this.onMountUri();
     if (filter) {
       if (filter === '') {
         uri = this.onMountUri();
       } else {
-        uri += '?filter=' + filter
+        uri += '?filtro=' + filter
       }
     };
     fetch(this.request(uri, 'GET'))
@@ -129,16 +110,26 @@ export default class App extends Component {
         this.setState({showLoading: false});
         this.setState({redirectToReferrer: true});
         this.setState({
-          data: response.data
-        })
+          data: response.itens
+        });
+        setTimeout(() => {
+          this.onHideMessage();
+        }, 4000);
     })
     .catch(this.handlerError);   
   }
 
+  /**
+   * Salvar
+   * @memberof App
+   */
   onSubmit = (data) => {
+
+    let item = this.state.data;    
     this.setState({showLoading: true});
     let uri = this.onMountUri();
     //let uri = Util.getUri()+'api/ping';
+    //this.data.push(data);
     fetch(this.request(uri, 'POST', data))
     .then((response) => {
         if (!response.ok) {
@@ -149,18 +140,27 @@ export default class App extends Component {
         return response.json();
     })
     .then((response) => {
-        this.setState({showLoading: false});
-        localStorage.setItem('token', response.token);
-        this.setState({redirectToReferrer: true});
+        item.push(response);
+        this.setState({
+          data: item,
+          showLoading: false,
+          redirectToReferrer: true
+        })
         this.onShowMessage('Registro cadastro com sucesso', 'is-success');
+        setTimeout(() => {
+          this.onHideMessage();
+        }, 4000);
     })
     .catch(this.handlerError);
   }
 
+  /**
+   * Remover
+   * @memberof App
+   */
   onRemove = (data) => {
+    let uri = this.onMountUri() + '/' + data.id;
     this.setState({showLoading: true});
-    let uri = this.onMountUri() +'/ '+data.id;
-    //let uri = Util.getUri()+'api/ping';
     fetch(this.request(uri, 'DELETE'))
     .then((response) => {
         if (!response.ok) {
@@ -171,21 +171,24 @@ export default class App extends Component {
         return response.json();
     })
     .then((response) => {
-        this.setState({showLoading: false});
-        localStorage.setItem('token', response.token);
-        this.setState({redirectToReferrer: true});
+        this.setState({redirectToReferrer: true, showLoading: false});
         this.onShowMessage('Registro removido com sucesso', 'is-success');
+        setTimeout(() => {
+          this.onHideMessage();
+        }, 4000);
     })
     .catch(this.handlerError);
   }
 
   onEdit = (item) => {
     this.setState({
-      form: item
+      form: item,
+      edit: true
     })
   }
 
   onUpdate = (data) => {
+    let itens = this.state.data;
     this.setState({showLoading: true});
     let uri = this.onMountUri() + "/" + data.id;
     //let uri = Util.getUri()+'api/ping';
@@ -199,10 +202,24 @@ export default class App extends Component {
         return response.json();
     })
     .then((response) => {
-        this.setState({showLoading: false});
-        localStorage.setItem('token', response.token);
-        this.setState({redirectToReferrer: true});
+        itens.map(function(item) {
+          if (item.id === data.id) {
+            item.nome = data.nome;
+            item.setor = data.setor;
+            item.ramalOuTelefone = data.ramalOuTelefone;
+          }
+          return item;
+        });
+        this.setState({
+          data: itens,
+          showLoading: false,
+          redirectToReferrer: true,
+          edit: false
+        });
         this.onShowMessage('Registro cadastro com sucesso', 'is-success');
+        setTimeout(() => {
+          this.onHideMessage();
+        }, 4000);
     })
     .catch(this.handlerError);
   }
@@ -240,13 +257,19 @@ export default class App extends Component {
     }, 4000);
   }
 
+  onCancel = (edit) => {
+    this.setState({
+      edit: edit
+    })
+  }
+
   request = (uri, method, data) => {
     
     const options = {
         method: method,
         mode: 'cors',
         headers: Util.mountHeader()
-    }
+    };
     
     if (data) {
       options.body = JSON.stringify(data);
