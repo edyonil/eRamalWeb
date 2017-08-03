@@ -99,6 +99,11 @@ export default class App extends Component {
     };
     fetch(this.request(uri, 'GET'))
     .then((response) => {
+        if (response.status === 400) {
+          alert(response.statusText);
+          this.props.history.push('/login');
+          throw new Error(response.statusText);
+        }
         if (!response.ok) {
             return response.text().then((data) => {
                 throw new Error(data);

@@ -60,6 +60,7 @@ export default class FormContatoComponent extends Component {
             data.id = this.props.form.id;
             this.props.onUpdate(data);
         }
+        this.refs.nome.focus();
         this.clearRefs()
     }
 

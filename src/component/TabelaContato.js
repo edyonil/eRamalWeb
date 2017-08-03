@@ -22,7 +22,7 @@ export default class TabelaContatoComponent extends Component {
                     <table className="table">
                         <thead>
                             <tr>
-                                <th>Id</th>
+                                <th>#</th>
                                 <th>Nome</th>
                                 <th>Ramal/Telefone</th>
                                 <th>Setor</th>
@@ -33,7 +33,7 @@ export default class TabelaContatoComponent extends Component {
                             {_this.props.itens.map(function (item, index) {
                                 return (
                                     <tr key={index}>
-                                        <td>{item.id}</td>
+                                        <td>{item.ordem}</td>
                                         <td>{item.nome}</td>
                                         <td>{item.ramalOuTelefone}</td>
                                         <td>{item.setor}</td>

@@ -33,7 +33,8 @@ export default class Home extends Component
 
 export const isAuthenticated = () => {
   let token = localStorage.getItem('token');
-  if (token === 'undefined') {
+  if (token === 'undefined' || token === null) {
+    
     return false;
   }
 

@@ -6,7 +6,7 @@ export default class FormLogin extends Component{
             <form onSubmit={this.handleSubmit}>
                 <div className="field">
                     <p className="control has-icons-left">
-                        <input className="input input-filter" ref="email" type="email" placeholder="Email" />
+                        <input className="input input-filter" ref="email" type="email" name="email" placeholder="Email" />
                         <span className="icon is-small is-left">
                         <i className="fa fa-envelope"></i>
                         </span>
@@ -14,7 +14,7 @@ export default class FormLogin extends Component{
                 </div>
                 <div className="field">
                     <p className="control has-icons-left">
-                        <input className="input input-filter" ref="password" type="password" placeholder="Password" />
+                        <input className="input input-filter" ref="password" name="password" type="password" placeholder="Password" />
                         <span className="icon is-small is-left">
                         <i className="fa fa-lock"></i>
                         </span>

@@ -49,7 +49,7 @@ export default class Home extends Component
 
     render = () => {
         const {from} = this.props.location.state || '/';
-        const {redirectToReferrer} = this.state;
+        const {redirectToReferrer} = this.state || null;
         const showLoading = this.state.showLoading;
         const alert = this.state.alert;
 
@@ -78,9 +78,15 @@ export default class Home extends Component
         );
     }
 
+    componentDidMount = () => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            this.props.history.push('/dahsboard');
+        }
+    }
+
     onLogin = (item) => {
-        
-        //@todo remover apos os testes
+
         try {
             this.validFormLogin(item);
         } catch (error) {
