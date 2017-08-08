@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 export default class TabelaContatoComponent extends Component {
-    
+
     render = () => {
 
         const _this = this;
@@ -18,31 +18,31 @@ export default class TabelaContatoComponent extends Component {
                         </span>
                     </form>
                 </div>
-                <div className="panel-block panel-block-tabela">
+                <div className="panel-block panel-block-tabela" style={{alignItems:'start'}}>
                     <table className="table">
                         <thead>
                             <tr>
-                                <th>Id</th>
+                                <th>#</th>
                                 <th>Nome</th>
                                 <th>Ramal/Telefone</th>
                                 <th>Setor</th>
-                                <th></th>
+                                <th style={{width:'110px'}}></th>
                             </tr>
                         </thead>
                         <tbody>
                             {_this.props.itens.map(function (item, index) {
                                 return (
                                     <tr key={index}>
-                                        <td>{item['.key']}</td>
+                                        <td>{item.ordem}</td>
                                         <td>{item.nome}</td>
-                                        <td>{item.ramal}</td>
+                                        <td>{item.ramalOuTelefone}</td>
                                         <td>{item.setor}</td>
                                         <td>
                                             <a className="button is-primary" onClick={() => {_this.onEdit(item)}}>
                                                 <span className="icon is-small">
                                                     <i className="fa fa-pencil-square-o"></i>
                                                 </span>
-                                            </a> <a onClick={() => _this.onRemove(item)} className="button is-danger">
+                                            </a> <a onClick={() => _this.onRemove(item, index)} className="button is-danger">
                                                 <span className="icon is-small">
                                                     <i className="fa fa-trash"></i>
                                                 </span>
@@ -63,15 +63,20 @@ export default class TabelaContatoComponent extends Component {
         this.props.onSearch(this.refs.filter.value.trim());
     }
 
-    onRemove = (item) => {
-        this.props.onRemove(item);
+    onRemove = (item, index) => {
+        let remove = confirm('Tem certeza que deseja remover esse contato?');
+        if (remove) {
+            this.props.itens.splice(index, 1);
+            this.props.onRemove(item);
+        }
+
     }
 
     onEdit = (item) => {
         this.props.onEdit({
-            id: item['.key'],
+            id: item.id,
             nome: item.nome,
-            ramal: item.ramal,
+            ramalOuTelefone: item.ramalOuTelefone,
             setor: item.setor
         });
     }

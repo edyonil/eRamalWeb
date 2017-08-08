@@ -8,7 +8,8 @@ const styles = {
     },
     nav: {
         backgroundColor:'hsl(0, 0%, 96%)',
-        boxShadow: '2px 0px 2px hsl(0, 0%, 48%)'
+        boxShadow: '2px 0px 2px hsl(0, 0%, 48%)',
+        height: 'auto'
     }
 }
 
