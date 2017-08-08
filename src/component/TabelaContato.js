@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 export default class TabelaContatoComponent extends Component {
-    
+
     render = () => {
 
         const _this = this;
@@ -18,7 +18,7 @@ export default class TabelaContatoComponent extends Component {
                         </span>
                     </form>
                 </div>
-                <div className="panel-block panel-block-tabela">
+                <div className="panel-block panel-block-tabela" style={{alignItems:'start'}}>
                     <table className="table">
                         <thead>
                             <tr>
@@ -26,7 +26,7 @@ export default class TabelaContatoComponent extends Component {
                                 <th>Nome</th>
                                 <th>Ramal/Telefone</th>
                                 <th>Setor</th>
-                                <th></th>
+                                <th style={{width:'110px'}}></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -69,7 +69,7 @@ export default class TabelaContatoComponent extends Component {
             this.props.itens.splice(index, 1);
             this.props.onRemove(item);
         }
-        
+
     }
 
     onEdit = (item) => {
